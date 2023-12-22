@@ -57,37 +57,36 @@ const twilioClient = twilio('ACbd383e1378e7c224ca910c9237391359', '79074b7280f6d
 
 
 
-app.post('/webhook', async (req, res) => {
-  const userMessage = req.body.Body; // Assuming Twilio sends the message content in the 'Body'
+// app.post('/webhook', async (req, res) => {
+//   const userMessage = req.body.Body;
+//   const sessionPath = sessionClient.projectAgentSessionPath(projectId,  generateRandomSessionID());
+//   const request = {
+//     session: sessionPath,
+//     queryInput: {
+//       text: {
+//         text: userMessage,
+//         languageCode: 'en-US',
+//       },
+//     },
+//   };
 
-  const sessionPath = sessionClient.projectAgentSessionPath(projectId,  generateRandomSessionID());
-  const request = {
-    session: sessionPath,
-    queryInput: {
-      text: {
-        text: userMessage,
-        languageCode: 'en-US',
-      },
-    },
-  };
+//   try {
+//     const [response] = await sessionClient.detectIntent(request);
+//     const fulfillmentText = response.queryResult.fulfillmentText;
 
-  try {
-    const [response] = await sessionClient.detectIntent(request);
-    const fulfillmentText = response.queryResult.fulfillmentText;
+//     const twilioResponse = await twilioClient.messages.create({
+//       body: fulfillmentText,
+//       from: '+14155238886',
+//       to: '+923309225386',
+//     });
 
-    const twilioResponse = await twilioClient.messages.create({
-      body: fulfillmentText,
-      from: '+14155238886',
-      to: '+923309225386',
-    });
-
-    console.log('Response sent via WhatsApp:', twilioResponse.sid);
-    res.sendStatus(200);
-  } catch (error) {
-    console.error('Error processing message:', error);
-    res.sendStatus(500);
-  }
-});
+//     console.log('Response sent via WhatsApp:', twilioResponse.sid);
+//     res.sendStatus(200);
+//   } catch (error) {
+//     console.error('Error processing message:', error);
+//     res.sendStatus(500);
+//   }
+// });
 
 
 // Rest of your code...

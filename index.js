@@ -95,9 +95,9 @@ app.listen( process.env.PORT , () => {
   console.log(`webhook is listening on port ${process.env.PORT}`);
 });
 app.get("/webhook", (req, res) => {
-  let mode = req.query("hub.mode");
-  let challenge = req.query("hub.challenge");
-  let token = req.query("hub.verify_token");
+  let mode = req.query["hub.mode"];
+  let challenge = req.query["hub.challenge"];
+  let token = req.query["hub.verify_token"];
 
   if (mode && token) {
     if (mode === "subscribe" && token === mytoken) {

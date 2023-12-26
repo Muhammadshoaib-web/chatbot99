@@ -17,7 +17,7 @@ import {config} from 'dotenv'
 import axios from 'axios' 
 // import twilio from 'twilio';
 const token = process.env.TOKEN;
-const mytoken = process.env.MYTOKEN;
+const myToken = process.env.MYTOKEN;
 
 // import dialogflow from '@google-cloud/dialogflow';
 
@@ -34,14 +34,14 @@ app.listen(process.env.PORT,()=>{
 //to verify the callback url from dashboard side - cloud api side
 app.get("/webhook",(req,res)=>{
  let mode=req.query["hub.mode"];
- let challange=req.query["hub.challenge"];
+ let challenge=req.query["hub.challenge"];
  let token=req.query["hub.verify_token"];
 
 
   if(mode && token){
 
-      if(mode==="subscribe" && token===mytoken){
-          res.status(200).send(challange);
+      if(mode==="subscribe" && token===myToken){
+          res.status(200).send(challenge);
       }else{
           res.status(403);
       }
@@ -69,16 +69,16 @@ app.post("/webhook",(req,res)=>{ //i want some
 
              console.log("phone number "+phon_no_id);
              console.log("from "+from);
-             console.log("boady param "+msg_body);
+             console.log("body param "+msg_body);
 
              axios({
                  method:"POST",
-                 url:"https://graph.facebook.com/v13.0/"+phon_no_id+"/messages?access_token="+token,
+                 url:"https://graph.facebook.com/v17.0/"+phon_no_id+"/messages?access_token="+token,
                  data:{
                      messaging_product:"whatsapp",
                      to:from,
                      text:{
-                         body:"Hi.. I'm Prasath, your message is "+msg_body
+                         body:"Hi.. I'm Awais, your message is "+msg_body
                      }
                  },
                  headers:{

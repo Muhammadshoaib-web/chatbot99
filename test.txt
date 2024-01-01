@@ -1,0 +1,113 @@
+//index file
+import express from "express";
+import bodyParser from "body-parser";
+import { config } from "dotenv";
+import webhookRouter from "./routes/webhookRouter.js";
+
+config();
+
+const app = express();
+
+app.use(bodyParser.json());
+app.use(express.json());
+
+app.use("/webhook", webhookRouter);
+
+const port = process.env.PORT || 3000;
+
+app.listen(port, () => {
+  console.log(`server is running on port ${port}`);
+});
+
+//axiosHelper.js
+
+import axios from "axios";
+
+export async function sendWhatsAppMessage(phoneNoId, form) {
+  try {
+    await axios.post(
+      `https://graph.facebook.com/v17.0/${phoneNoId}/messages?access_token=${process.env.TOKEN}`,
+      {
+        messaging_product: "whatsapp",
+        to: form,
+        text: {
+          body: "Hello! I am 99 chatbot. How can I help you?",
+        },
+      }
+    );
+
+    console.log("WhatsApp message sent successfully");
+  } catch (error) {
+    console.error("Error sending WhatsApp message:", error);
+    throw error;
+  }
+}
+
+// helpers
+
+export function isValidWebhookPayload(bodyParam) {
+  return (
+    bodyParam.entry &&
+    bodyParam.entry[0].changes &&
+    bodyParam.entry[0].changes[0].value.messages &&
+    bodyParam.entry[0].changes[0].value.messages[0]
+  );
+}
+
+webhook Router 
+
+import express from "express";
+import {
+  handleVerification,
+  handleWebhookPost,
+} from "../controllers/messageControllers.js";
+
+const router = express.Router();
+
+router.get("/", handleVerification);
+router.post("/", handleWebhookPost);
+
+export default router;
+
+//messageControllers
+
+import { sendWhatsAppMessage } from "../utils/axiosHelper.js";
+import { isValidWebhookPayload } from "../utils/helpers.js";
+
+export async function handleVerification(req, res) {
+  const mode = req.query("hub.mode");
+  const challenge = req.query("hub.challenge");
+  const verifyToken = req.query("hub.verify_token");
+
+  if (mode && verifyToken) {
+    if (mode === "subscribe" && verifyToken === process.env.MYTOKEN) {
+      res.status(200).send(challenge);
+    } else {
+      res.status(403).send("Forbidden");
+    }
+  } else {
+    res.status(400).send("Bad Request");
+  }
+}
+
+export async function handleWebhookPost(req, res) {
+  const bodyParam = req.body;
+  console.log(JSON.stringify(bodyParam, null, 2));
+
+  if (bodyParam.object && isValidWebhookPayload(bodyParam)) {
+    const phoneNoId =
+      bodyParam.entry[0].changes[0].value.metadata.phone_number_id;
+    const form = bodyParam.entry[0].changes[0].value.messages[0].form;
+
+    try {
+      await sendWhatsAppMessage(phoneNoId, form);
+      res.sendStatus(200);
+    } catch (error) {
+      console.error("Error sending WhatsApp message:", error);
+      res.sendStatus(500);
+    }
+  } else {
+    res.sendStatus(404);
+  }
+}
+

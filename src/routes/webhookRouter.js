@@ -1,12 +1,12 @@
 import express from "express";
 import {
-  handleVerification,
-  handleWebhookPost,
+  handleWebhookGetController,
+  handleWebhookPostController,
 } from "../controllers/messageControllers.js";
 
 const router = express.Router();
 
-router.get("/", handleVerification);
-router.post("/", handleWebhookPost);
+router.get("/webhook", handleWebhookGetController);
+router.post("/webhook", handleWebhookPostController);
 
 export default router;

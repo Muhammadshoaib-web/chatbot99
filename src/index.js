@@ -4,16 +4,16 @@ import { config } from "dotenv";
 import webhookRouter from "./routes/webhookRouter.js";
 
 config();
-
 const app = express();
-
 app.use(bodyParser.json());
 app.use(express.json());
 
-app.use("/webhook", webhookRouter);
+app.listen(process.env.PORT, () => {
+  console.log(`server is working on http://localhost:$(process.env.PORT)`);
+});
 
-const port = process.env.PORT || 3000;
+app.use("/api/v1", webhookRouter);
 
-app.listen(port, () => {
-  console.log(`server is running on port ${port}`);
+app.get("/", (req, res) => {
+  res.status(200).send("Hello, this is the webhook setup");
 });
